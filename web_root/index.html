@@ -1,0 +1,21 @@
+<html>
+  <meta charset="UTF-8">
+  <head>
+    <title>AJAX Boilerplate</title>
+    <link rel="icon" href="smm_bare.svg">
+    <script src="jquery-1.11.3.min.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      function getPuppy() {
+          $.get('/puppy',function(data, status) {
+              $('#puppy_jpeg').attr('src',`data:image/jpeg;base64,${data}`);
+          });
+      }
+    </script>
+    <h1>Server is operational</h1>
+    <p>If you can see this, the mongoose server is working correctly</p>
+    <img id="puppy_jpeg" src="">
+    <button type="button" onclick="getPuppy()">Puppy!</button>
+  </body>
+</html>
