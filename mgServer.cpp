@@ -15,7 +15,9 @@ mgServer::mgServer(char* port,
                    httpServerThread{} {
   httpServerOptions.document_root = path;
   httpServerOptions.auth_domain = "example.com";
+  httpServerOptions.enable_directory_listing = "yes";
   httpServerOptions.ip_acl = NULL;
+  httpServerOptions.ssi_pattern = "";
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,7 +91,6 @@ void handleEvent(struct mg_connection* connection,
     }
     else {
       cout << "serving http..." << endl;
-      //printHttpOpts(server->httpServerOptions);
       mg_serve_http(connection, message, server->httpServerOptions);
       cout << "done" << endl;
     }
