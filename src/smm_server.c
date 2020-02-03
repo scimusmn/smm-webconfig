@@ -14,8 +14,8 @@ void print_settings(server_t server) {
   if( server.http_server_options.ssi_pattern != NULL)              { printf("ssi_pattern: %s\n", server.http_server_options.ssi_pattern); }                           else { printf("ssi_pattern: NULL\n"); }              
   if( server.http_server_options.ip_acl != NULL)                   { printf("ip_acl: %s\n",server.http_server_options.ip_acl); }                                      else { printf("ip_acl: NULL\n"); }                   
   if( server.http_server_options.url_rewrites != NULL)             { printf("url_rewrites: %s\n",server.http_server_options.url_rewrites); }                          else { printf("url_rewrites: NULL\n"); }             
-  if( server.http_server_options.dav_document_root != NULL)        { printf("dav_document_root: %s\n", server.http_server_options.dav_document_root); }               else { printf("dav_document_root: NULL\n"); }        
-  if( server.http_server_options.dav_auth_file != NULL)            { printf("dav_auth_file: %s\n", server.http_server_options.dav_auth_file); }                       else { printf("dav_auth_file: NULL\n"); }            
+  //if( server.http_server_options.dav_document_root != NULL)        { printf("dav_document_root: %s\n", server.http_server_options.dav_document_root); }               else { printf("dav_document_root: NULL\n"); }        
+  //if( server.http_server_options.dav_auth_file != NULL)            { printf("dav_auth_file: %s\n", server.http_server_options.dav_auth_file); }                       else { printf("dav_auth_file: NULL\n"); }            
   if( server.http_server_options.hidden_file_pattern != NULL)      { printf("hidden_file_pattern: %s\n", server.http_server_options.hidden_file_pattern); }           else { printf("hidden_file_pattern: NULL\n"); }      
   if( server.http_server_options.cgi_file_pattern != NULL)         { printf("cgi_file_pattern: %s\n",server.http_server_options.cgi_file_pattern); }                  else { printf("cgi_file_pattern: NULL\n"); }         
   if( server.http_server_options.cgi_interpreter != NULL)          { printf("cgi_interpreter: %s\n", server.http_server_options.cgi_interpreter); }                   else { printf("cgi_interpreter: NULL\n"); }          
@@ -42,13 +42,31 @@ int setup_server(server_t* server,
   server->connection = mg_bind(server->event_manager, server->http_port, event_handler);
   mg_set_protocol_http_websocket(server->connection);
 
-  server->http_server_options.document_root = "../web_root";
-  server->http_server_options.url_rewrites = NULL;
-  server->http_server_options.index_files = "index.html,index.htm,index.shtml,index.cgi,index.php";
-  server->http_server_options.per_directory_auth_file = NULL;
-  server->http_server_options.global_auth_file = NULL;
-  server->http_server_options.custom_mime_types = NULL;
+  server->http_server_options.document_root = "./web_root";            
+  server->http_server_options.index_files = NULL;              
+  server->http_server_options.per_directory_auth_file = NULL;  
+  server->http_server_options.auth_domain = NULL;              
+  server->http_server_options.global_auth_file = NULL;         
+  server->http_server_options.enable_directory_listing = NULL; 
+  server->http_server_options.ssi_pattern = NULL;              
+  server->http_server_options.ip_acl = NULL;                   
+  server->http_server_options.url_rewrites = NULL;             
+  server->http_server_options.dav_document_root = NULL;      
+  server->http_server_options.dav_auth_file = NULL;          
+  server->http_server_options.hidden_file_pattern = NULL;      
+  server->http_server_options.cgi_file_pattern = NULL;         
+  server->http_server_options.cgi_interpreter = NULL;          
+  server->http_server_options.custom_mime_types = NULL;        
+  server->http_server_options.extra_headers = NULL;            
 
+
+
+
+
+
+
+
+  
   print_settings(*server);
   
   return SERVER_SUCCESS;
