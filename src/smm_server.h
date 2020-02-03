@@ -61,6 +61,42 @@ typedef void (*callback_t)(struct mg_connection* connection,
  * 
  * Note that this is not a very efficient implementation, and so
  * use with more than about 100 callbacks is discouraged.
+ *
+ * Usage example:
+ * @code
+ * #include "smm_server.h"
+ * 
+ * // a callback function
+ * void hello(struct mg_connection* c,
+ *            struct http_message* m,
+ *            void* data) {
+ *   printf("hello\n");
+ * }
+ * 
+ * int main(int argc, char** argv) {
+ *   // create callback map
+ *   callback_map_t map;
+ *   create_callback_map(&map, 8);
+ *
+ *   // add a callback
+ *   add_callback(map, "hello", (callback_t) &hello);
+ * 
+ *   // retrieve a callback
+ *   callback_t cb;
+ *   get_callback(map, "hello", &cb);
+ *   (*cb)(NULL, NULL, NULL);
+ * 
+ *   // attempt to retrieve nonexistent callback
+ *   int result = get_callback(map, "goodbye", &cb);
+ *   if (result == CALLBACK_NOT_FOUND_ERROR) {
+ *     printf("could not find callback with key '%s'\n", "goodbye");
+ *   }
+ *   
+ *   // free map when done
+ *   free_callback_map(map);
+ *   return 0;
+ * }
+ * @endcode
  */
 typedef struct {
   /*! The number of callbacks the map can hold */
