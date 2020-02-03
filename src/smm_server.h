@@ -7,11 +7,11 @@
 #ifndef INCLUDE_MG_SERVER_H
 #define INCLUDE_MG_SERVER_H
 
-#include <pthread.h>
-#include "mg/mongoose.h"
-
 #include <stdlib.h>
 #include <string.h>
+
+#include "mg/mongoose.h"
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -60,7 +60,7 @@ typedef void (*callback_t)(struct mg_connection* connection,
  * with strings as keys.
  * 
  * Note that this is not a very efficient implementation, and so
- * use with more than about 100 callbacks is discouraged.
+ * use with significant numbers of callbacks is discouraged.
  *
  * Usage example:
  * @code
@@ -148,5 +148,60 @@ int remove_callback(callback_map_t map, char* name);
 int free_callback_map(callback_map_t map);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/*! Server function completed normally */
+#define SERVER_SUCCESS 0
+/*! Server function encountered an error allocating memeory */
+#define SERVER_ALLOCATE_ERROR 1
+
+/*! @struct server_t
+ * @brief The primary server structure.
+ */
+typedef struct {
+  /*! HTTP port to serve content. */
+  char* http_port;
+  /*! Mongoose server options */
+  struct mg_serve_http_opts http_server_options;
+  /*! Mongoose connection */
+  struct mg_connection* connection;
+  /*! Mongoose event manager */
+  struct mg_mgr* event_manager;
+  /*! Pointer to callback map */
+  callback_map_t* callback_map;
+  /*! User data accessible to callbacks */
+  void* user_data;
+  /*! Flag indicating server status */
+  unsigned int running;
+} server_t;
+
+/*! @brief Configure a server structure.
+ *
+ * @param server A pointer to the server structure to initialize.
+ * @param port The port to serve content on.
+ * @param callback_map A pointer to a callback_map_t containing 
+ *                     user-defined callback functions.
+ * @param user_data A void pointer to some user data structure.
+ *                  This is accessible to callback functions.
+ */
+int setup_server(server_t* server,
+                 char* port,
+                 callback_map_t* callback_map,
+                 void* user_data);
+
+/*! @brief Begin the server loop.
+ *
+ * It is recommended to launch this function in a separate thread.
+ *
+ * @param server The server struct to launch.
+ */
+int launch_server(server_t server);
+
+/*! @brief Free the server's resources.
+ *
+ * This function should be called on shutdown.
+ *
+ * @param server The server structure to free.
+ */
+int free_server(server_t server);
 
 #endif

@@ -13,3 +13,5 @@ _deps
 *.dll
 *.exe
 smm-webconfig-demo
+doc/html
+doc/latex

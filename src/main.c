@@ -8,19 +8,23 @@ void hello(struct mg_connection* c,
 }
 
 int main(int argc, char** argv) {
+  printf("begin\n");
   callback_map_t map;
   create_callback_map(&map, 8);
   add_callback(map, "hello", (callback_t) &hello);
 
-  callback_t cb;
-  get_callback(map, "hello", &cb);
-  (*cb)(NULL, NULL, NULL);
+  printf("initialize server\n");
 
-  int result = get_callback(map, "goodbye", &cb);
-  if (result == CALLBACK_NOT_FOUND_ERROR) {
-    printf("could not find callback with key '%s'\n", "goodbye");
-  }
-  
+  server_t server;
+  setup_server(&server, "8000", &map, NULL);
+
+  launch_server(server);
+
+  free_server(server);
   free_callback_map(map);
   return 0;
 }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

@@ -14,7 +14,7 @@ find_package(Threads REQUIRED)
 #set(GXX_COMPILE_FLAGS "-fpermissive")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
 
-add_executable(smm-webconfig-demo src/mg/mongoose.c src/callback_map.c src/main.c)
+add_executable(smm-webconfig-demo src/mg/mongoose.c src/smm_server.c src/callback_map.c src/main.c)
 
 target_link_libraries(smm-webconfig-demo ssl crypto Threads::Threads) # ${OpenCV_LIBS})
 
