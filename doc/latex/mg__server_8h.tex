@@ -1,0 +1,167 @@
+\hypertarget{mg__server_8h}{}\doxysection{C\+:/msys64/home/kaswanson/work/code/smm-\/webconfig/src/mg\+\_\+server.h File Reference}
+\label{mg__server_8h}\index{C:/msys64/home/kaswanson/work/code/smm-\/webconfig/src/mg\_server.h@{C:/msys64/home/kaswanson/work/code/smm-\/webconfig/src/mg\_server.h}}
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}mg/mongoose.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A very simple associative array for callback functions, with strings as keys. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group___c_a_l_l_b_a_c_k___r_e_t_v_a_l_s_ga1f2faeb9f71adda4080840cac410458f}{C\+A\+L\+L\+B\+A\+C\+K\+\_\+\+S\+U\+C\+C\+E\+SS}}~0
+\item 
+\#define \mbox{\hyperlink{group___c_a_l_l_b_a_c_k___r_e_t_v_a_l_s_gaa8f57f20b4dabdcccdba73a78972da7f}{C\+A\+L\+L\+B\+A\+C\+K\+\_\+\+N\+O\+T\+\_\+\+F\+O\+U\+N\+D\+\_\+\+E\+R\+R\+OR}}~1
+\item 
+\#define \mbox{\hyperlink{group___c_a_l_l_b_a_c_k___r_e_t_v_a_l_s_ga07b56c9dcb9098fbd44d7255d7b014d8}{C\+A\+L\+L\+B\+A\+C\+K\+\_\+\+A\+L\+L\+O\+C\+A\+T\+E\+\_\+\+E\+R\+R\+OR}}~2
+\item 
+\#define \mbox{\hyperlink{group___c_a_l_l_b_a_c_k___r_e_t_v_a_l_s_ga7b1674a1e992ce7edfda6dd65ae2d441}{C\+A\+L\+L\+B\+A\+C\+K\+\_\+\+F\+U\+L\+L\+\_\+\+E\+R\+R\+OR}}~3
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \mbox{\hyperlink{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}{callback\+\_\+t}}) (struct mg\+\_\+connection $\ast$connection, struct http\+\_\+message $\ast$message, void $\ast$user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em A helper typedef to make working with callbacks easier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{mg__server_8h_ae02e091600e6ca752b9380dee8a9c3ff}{create\+\_\+callback\+\_\+map}} (\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}} $\ast$map, unsigned int size)
+\begin{DoxyCompactList}\small\item\em Creates a callback map. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mg__server_8h_aefa6b52f8d712b63fcef04bf32cfa1ac}{add\+\_\+callback}} (\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}} map, char $\ast$name, \mbox{\hyperlink{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}{callback\+\_\+t}} callback)
+\begin{DoxyCompactList}\small\item\em Adds a new callback to an existing map. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mg__server_8h_a27e99087ee03bd555a95bf5a9633d081}{get\+\_\+callback}} (\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}} map, char $\ast$name, \mbox{\hyperlink{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}{callback\+\_\+t}} $\ast$callback)
+\begin{DoxyCompactList}\small\item\em Get a callback from a map. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mg__server_8h_a0c28cc7cc38ddb9f70417c75a0bc2211}{remove\+\_\+callback}} (\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}} map, char $\ast$name)
+\begin{DoxyCompactList}\small\item\em Delete a key/value pair from a callback map. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{mg__server_8h_ac499e1eef481e44ccf181a58bae0b677}{free\+\_\+callback\+\_\+map}} (\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}} map)
+\begin{DoxyCompactList}\small\item\em Deallocate the memory for a callback map. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Contains the typedefs, structs, and functions needed to create and launch a configuration server. 
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}\label{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}} 
+\index{mg\_server.h@{mg\_server.h}!callback\_t@{callback\_t}}
+\index{callback\_t@{callback\_t}!mg\_server.h@{mg\_server.h}}
+\doxysubsubsection{\texorpdfstring{callback\_t}{callback\_t}}
+{\footnotesize\ttfamily callback\+\_\+t}
+
+
+
+A helper typedef to make working with callbacks easier. 
+
+An example callback\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{void} callback(\textcolor{keyword}{struct} mg\_connection* connection,}
+\DoxyCodeLine{              \textcolor{keyword}{struct} http\_message* message,}
+\DoxyCodeLine{              \textcolor{keywordtype}{void}* user\_data) \{}
+\DoxyCodeLine{  printf(\textcolor{stringliteral}{"callback triggered!\(\backslash\)n"});}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em connection} & The Mongoose server\textquotesingle{}s H\+T\+TP connection with a client. \\
+\hline
+{\em message} & The Mongoose H\+T\+TP message sent from the client that triggered the callback. \\
+\hline
+{\em user\+\_\+data} & A void pointer to the user data pased when the server was created. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{mg__server_8h_aefa6b52f8d712b63fcef04bf32cfa1ac}\label{mg__server_8h_aefa6b52f8d712b63fcef04bf32cfa1ac}} 
+\index{mg\_server.h@{mg\_server.h}!add\_callback@{add\_callback}}
+\index{add\_callback@{add\_callback}!mg\_server.h@{mg\_server.h}}
+\doxysubsubsection{\texorpdfstring{add\_callback()}{add\_callback()}}
+{\footnotesize\ttfamily int add\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}}}]{map,  }\item[{char $\ast$}]{name,  }\item[{\mbox{\hyperlink{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}{callback\+\_\+t}}}]{callback }\end{DoxyParamCaption})}
+
+
+
+Adds a new callback to an existing map. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & The map to add the callback to. \\
+\hline
+{\em name} & The string key to associate with the callback. \\
+\hline
+{\em callback} & A function pointer to the callback itself. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{mg__server_8h_ae02e091600e6ca752b9380dee8a9c3ff}\label{mg__server_8h_ae02e091600e6ca752b9380dee8a9c3ff}} 
+\index{mg\_server.h@{mg\_server.h}!create\_callback\_map@{create\_callback\_map}}
+\index{create\_callback\_map@{create\_callback\_map}!mg\_server.h@{mg\_server.h}}
+\doxysubsubsection{\texorpdfstring{create\_callback\_map()}{create\_callback\_map()}}
+{\footnotesize\ttfamily int create\+\_\+callback\+\_\+map (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}} $\ast$}]{map,  }\item[{unsigned int}]{size }\end{DoxyParamCaption})}
+
+
+
+Creates a callback map. 
+
+All needed memory is allocated by this function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & Pointer to the map structure to create. \\
+\hline
+{\em size} & The desired number of elements the map can contain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{mg__server_8h_ac499e1eef481e44ccf181a58bae0b677}\label{mg__server_8h_ac499e1eef481e44ccf181a58bae0b677}} 
+\index{mg\_server.h@{mg\_server.h}!free\_callback\_map@{free\_callback\_map}}
+\index{free\_callback\_map@{free\_callback\_map}!mg\_server.h@{mg\_server.h}}
+\doxysubsubsection{\texorpdfstring{free\_callback\_map()}{free\_callback\_map()}}
+{\footnotesize\ttfamily int free\+\_\+callback\+\_\+map (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}}}]{map }\end{DoxyParamCaption})}
+
+
+
+Deallocate the memory for a callback map. 
+
+You should call this function upon exiting the program. 
+\begin{DoxyParams}{Parameters}
+{\em map} & The map to deallocated \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{mg__server_8h_a27e99087ee03bd555a95bf5a9633d081}\label{mg__server_8h_a27e99087ee03bd555a95bf5a9633d081}} 
+\index{mg\_server.h@{mg\_server.h}!get\_callback@{get\_callback}}
+\index{get\_callback@{get\_callback}!mg\_server.h@{mg\_server.h}}
+\doxysubsubsection{\texorpdfstring{get\_callback()}{get\_callback()}}
+{\footnotesize\ttfamily int get\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}}}]{map,  }\item[{char $\ast$}]{name,  }\item[{\mbox{\hyperlink{mg__server_8h_a8612417a40e52d5e8cd348f9c72a5f94}{callback\+\_\+t}} $\ast$}]{callback }\end{DoxyParamCaption})}
+
+
+
+Get a callback from a map. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & The map to retrieve the callback from. \\
+\hline
+{\em name} & The string key of the desired callback. \\
+\hline
+{\em callback} & A pointer to a callback\+\_\+t pointer to fill with the requested callback. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{mg__server_8h_a0c28cc7cc38ddb9f70417c75a0bc2211}\label{mg__server_8h_a0c28cc7cc38ddb9f70417c75a0bc2211}} 
+\index{mg\_server.h@{mg\_server.h}!remove\_callback@{remove\_callback}}
+\index{remove\_callback@{remove\_callback}!mg\_server.h@{mg\_server.h}}
+\doxysubsubsection{\texorpdfstring{remove\_callback()}{remove\_callback()}}
+{\footnotesize\ttfamily int remove\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structcallback__map__t}{callback\+\_\+map\+\_\+t}}}]{map,  }\item[{char $\ast$}]{name }\end{DoxyParamCaption})}
+
+
+
+Delete a key/value pair from a callback map. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & The map to remove the pair from. \\
+\hline
+{\em name} & The key to remove from the map. \\
+\hline
+\end{DoxyParams}

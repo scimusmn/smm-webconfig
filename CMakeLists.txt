@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(smm-webconfig-demo C CXX)
-set(CXX_STANDARD 11)
+project(smm-webconfig-demo C)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
+#set(CXX_STANDARD 11)
 
 #find_package(OpenCV REQUIRED)
 find_package(Threads REQUIRED)
@@ -10,10 +11,10 @@ find_package(Threads REQUIRED)
 #  find_package(X11 REQUIRED)
 #endif()
 
-set(GXX_COMPILE_FLAGS "-fpermissive")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
+#set(GXX_COMPILE_FLAGS "-fpermissive")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GXX_COMPILE_FLAGS}")
 
-add_executable(smm-webconfig-demo mg/mongoose.c mgServer.cpp main.cpp)
+add_executable(smm-webconfig-demo src/mg/mongoose.c src/callback_map.c src/main.c)
 
 target_link_libraries(smm-webconfig-demo ssl crypto Threads::Threads) # ${OpenCV_LIBS})
 
