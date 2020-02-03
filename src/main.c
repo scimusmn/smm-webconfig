@@ -7,13 +7,12 @@ void hello(struct mg_connection* c,
   printf("hello\n");
 }
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 int main(int argc, char** argv) {
-  printf("begin\n");
   callback_map_t map;
   create_callback_map(&map, 8);
   add_callback(map, "hello", (callback_t) &hello);
-
-  printf("initialize server\n");
 
   server_t server;
   setup_server(&server, "8000", &map, NULL);

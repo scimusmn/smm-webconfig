@@ -4,7 +4,7 @@ static void event_handler(struct mg_connection* connection,
                           int event,
                           void* event_data);
 
-void print_settings(server_t server) {
+static void print_settings(server_t server) {
   if( server.http_server_options.document_root != NULL)            { printf("document_root: %s\n", server.http_server_options.document_root); }                       else { printf("document_root: NULL\n"); }            
   if( server.http_server_options.index_files != NULL)              { printf("index_files: %s\n", server.http_server_options.index_files); }                           else { printf("index_files: NULL\n"); }              
   if( server.http_server_options.per_directory_auth_file != NULL)  { printf("per_directory_auth_file: %s\n", server.http_server_options.per_directory_auth_file); }   else { printf("per_directory_auth_file: NULL\n"); }  
@@ -58,16 +58,6 @@ int setup_server(server_t* server,
   server->http_server_options.cgi_interpreter = NULL;          
   server->http_server_options.custom_mime_types = NULL;        
   server->http_server_options.extra_headers = NULL;            
-
-
-
-
-
-
-
-
-  
-  print_settings(*server);
   
   return SERVER_SUCCESS;
 }
@@ -107,7 +97,7 @@ static void event_handler(struct mg_connection* connection,
         cb(connection, message, server->user_data);
       }
       else if (result = CALLBACK_NOT_FOUND_ERROR) {
-        fprintf(stderr, "Could not find callback with key \"%s\"", callback_key);
+        fprintf(stderr, "Could not find callback with key '%s'\n", callback_key);
         mg_http_send_error(connection, 422, "Invalid callback key");
       }
       else {
