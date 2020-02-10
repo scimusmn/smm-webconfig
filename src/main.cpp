@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "mgServer.hpp"
+#include "smmServer.hpp"
 
 using namespace std;
 
@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
   callbackMap_t callbackMap;
   callbackMap["alpha"] = &alpha;
 
-  mgServer server(httpPort, rootPath, callbackMap, NULL);
+  smmServer server(httpPort, rootPath, callbackMap, NULL);
   server.launch();
 
   while(server.running) {}
