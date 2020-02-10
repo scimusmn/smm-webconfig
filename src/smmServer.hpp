@@ -11,7 +11,7 @@
 #include "mg/mongoose.h"
 
 typedef void (*callback_t)(struct mg_connection*, struct http_message*, void*);
-typedef std::unordered_map<char*, callback_t> callbackMap_t;
+typedef std::unordered_map<std::string, callback_t> callbackMap_t;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -31,10 +31,10 @@ public:
 
   bool beginServer();
   
-  smmServer(char* port,
-           char* path,
-           callbackMap_t callbackMap,
-           void* userData);
+  smmServer(std::string port,
+            std::string path,
+            callbackMap_t callbackMap,
+            void* userData);
   ~smmServer();
 
   bool launch();

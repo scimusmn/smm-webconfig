@@ -4,17 +4,20 @@ void printHttpOpts(struct mg_serve_http_opts opts);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-smmServer::smmServer(char* port,
-                   char* path,
-                   callbackMap_t callbackMap,
-                   void* userData) :
-                   httpPort(port),
-                   running(false),
-                   callbackMap(callbackMap),
-                   userData(userData),
-                   httpServerThread{} {
+smmServer::smmServer(std::string port,
+                     std::string path,
+                     callbackMap_t callbackMap,
+                     void* userData) :
+  running(false),
+  callbackMap(callbackMap),
+  userData(userData),
+  httpServerThread{} {
+  // set up http port
+  httpPort = (char*) malloc(256*sizeof(char));
+  strcpy(httpPort, port.c_str());
+  
   // set server options
-  httpServerOptions.document_root = "./web_root";    
+  httpServerOptions.document_root = path.c_str();
   httpServerOptions.index_files = NULL;              
   httpServerOptions.per_directory_auth_file = NULL;  
   httpServerOptions.auth_domain = NULL;              
@@ -36,6 +39,7 @@ smmServer::smmServer(char* port,
 
 smmServer::~smmServer() {
   shutdown();
+  free(httpPort);
   mg_mgr_free(&eventManager);
 }
 
