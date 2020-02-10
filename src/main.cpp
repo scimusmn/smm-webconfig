@@ -6,7 +6,7 @@ void alpha(struct mg_connection* conn,
            struct http_message* mess,
            void* data) {
   std::cout << "alpha" << std::endl;
-  mg_http_send_error(conn, 200, "alpha");
+  mg_send_response_line(conn, 200, NULL);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   smmServer server(httpPort, rootPath, callbackMap, NULL);
   server.launch();
 
-  while(server.running) {}
+  while(server.isRunning()) {}
   
   return 0;
 }

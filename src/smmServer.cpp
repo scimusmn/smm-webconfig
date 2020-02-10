@@ -45,20 +45,18 @@ smmServer::~smmServer() {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-bool smmServer::launch() {
+void smmServer::launch() {
   running = true;
   httpServerThread = std::thread{&smmServer::beginServer, this};
-  return true;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-bool smmServer::shutdown() {
+void smmServer::shutdown() {
   running = false;
   if (httpServerThread.joinable()) {
     httpServerThread.join();
   }
-  return true;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,7 +65,7 @@ bool smmServer::beginServer() {
   mg_mgr_init(&eventManager, this);
   connection = mg_bind(&eventManager, httpPort, handleEvent);
   if (connection == NULL) {
-    std::cerr << "FATAL: mg_bind() failed!\n";
+    std::cerr << "FATAL: mg_bind() failed! Is something else using the port?\n";
     running = false;
     return false;
   }
@@ -80,11 +78,23 @@ bool smmServer::beginServer() {
   return true;
 }
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+bool smmServer::isRunning() {
+  return running;
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void smmServer::sendCode(struct mg_connection* connection, int code, const char* message) {
+  mg_http_send_error(connection, code, message);
+}
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void handleEvent(struct mg_connection* connection,
-                 int event,
-                 void* eventData) {
+void smmServer::handleEvent(struct mg_connection* connection,
+                            int event,
+                            void* eventData) {
   smmServer* server = (smmServer*) connection->mgr->user_data;
   struct http_message* message = (struct http_message*) eventData;
 
@@ -101,7 +111,7 @@ void handleEvent(struct mg_connection* connection,
       }
       catch (std::out_of_range err) {
         std::cerr << "error: could not find callback with key '" << callbackKey <<"'" << std::endl;
-        mg_http_send_error(connection, 422, "Invalid callback key");
+        server->sendCode(connection, 422, "Invalid callback key");
       }
     }
     else {
