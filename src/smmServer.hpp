@@ -20,11 +20,6 @@
  */
 typedef void (*callback_t)(struct mg_connection*, struct http_message*, void*);
 
-/*! @typdef
- * @brief Helper typedef to make working with callback maps easier.
- */
-typedef std::unordered_map<std::string, callback_t> callbackMap_t;
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /*! @class
@@ -41,22 +36,23 @@ private:
 
   struct mg_connection* connection;
   struct mg_mgr eventManager;
+
+  std::unordered_map<std::string, callback_t> postCallbackMap;
+  std::unordered_map<std::string, callback_t>  getCallbackMap;
   
 public:
   /*! @brief The port to serve HTTP content over. */
   char* httpPort;
   struct mg_serve_http_opts httpServerOptions;
 
-  /*! @brief Mutex for thread-safe manipulation of server data.
+  /*! @brief A pointer to user data that is passed to callback functions. 
    *
-   * If you are modifying @ref userData in both callback and non-callback functions, this
-   * should be locked for all changes to prevent a race condition.
+   * This server is multithreaded, so modifying the data pointed to by userData 
+   * both within a callback and in another thread is not safe, and may cause a 
+   * race condition. For this reason, it is recommended that you use a mutex
+   * or other guard to control access to your userData object.
    */
-  std::mutex access;
-  /*! @brief A pointer to user data that is passed to callback functions. */
   void* userData;
-  /*! @brief An unordered map of callback functions. */
-  callbackMap_t callbackMap;
 
   /*! @brief smmServer constructor.
    *
@@ -67,7 +63,6 @@ public:
    */
   smmServer(std::string port,
             std::string path,
-            callbackMap_t callbackMap,
             void* userData);
 
   /*! @brief smmServer destructor.
@@ -89,6 +84,59 @@ public:
    * @returns @c True if the server is running; @c False otherwise.
    */
   bool isRunning();
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  /*! @brief Add a callback to a POST request.
+   *
+   * Adds a callback which can be invoked by sending a POST
+   * request to @c /post with the HTTP variable @c callback set to @c name.
+   *
+   * @param name The string key to invoke the callback later.
+   * @param callback Function pointer to the callback itself.
+   */
+  void addPostCallback(std::string name, callback_t callback);
+
+  /*! @brief Retrieves a POST callback.
+   *
+   * @param name The string key of the callback to retrieve.
+   *
+   * @returns The callback stored with key @c name if it exists, and @c NULL otherwise.
+   */
+  callback_t retrievePostCallback(std::string name);
+
+  /*! @brief Removes a POST callback.
+   *
+   * @param name The string key of the callback to remove.
+   */
+  void removePostCallback(std::string name);
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  /*! @brief Add a callback to a GET request.
+   *
+   * Adds a callback which can be invoked by sending a GET
+   * request to @c /get/[name].
+   *
+   * @param name Final URI string to invoke the callback.
+   * @param callback Function pointer to the callback itself.
+   */
+  void addGetCallback(std::string name, callback_t callback);
+
+  /*! @brief Retrieves a GET callback.
+   *
+   * @param name The string key of the callback to retrieve.
+   * 
+   * @returns The callback stored with key @c name if it exists, and @c NULL otherwise.
+   */  
+  callback_t retrieveGetCallback(std::string name);
+
+    /*! @brief Removes a GET callback.
+   *
+   * @param name The string key of the callback to remove.
+   */
+  void removeGetCallback(std::string name);
+  
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

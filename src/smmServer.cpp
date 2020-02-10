@@ -6,10 +6,10 @@ void printHttpOpts(struct mg_serve_http_opts opts);
 
 smmServer::smmServer(std::string port,
                      std::string path,
-                     callbackMap_t callbackMap,
                      void* userData) :
   running(false),
-  callbackMap(callbackMap),
+  postCallbackMap(),
+  getCallbackMap(),
   userData(userData),
   httpServerThread{} {
   // set up http port
@@ -102,15 +102,14 @@ void smmServer::handleEvent(struct mg_connection* connection,
 
   switch(event) {
   case MG_EV_HTTP_REQUEST:
-    if (mg_vcmp(&message->uri, "/control") == 0) {
+    if (mg_vcmp(&message->uri, "/post") == 0) {
       char callbackKey[256];
       mg_get_http_var(&message->body, "callback", callbackKey, sizeof(callbackKey));
-      try {
-        callback_t callback = server->callbackMap.at(callbackKey);
+      callback_t callback = server->retrievePostCallback(callbackKey);
+      if (callback != NULL) {
         callback(connection, message, server->userData);
       }
-      catch (std::out_of_range err) {
-        std::cerr << "error: could not find callback with key '" << callbackKey <<"'" << std::endl;
+      else {
         server->sendCode(connection, 422, "Invalid callback key");
       }
     }
@@ -124,6 +123,44 @@ void smmServer::handleEvent(struct mg_connection* connection,
   }
 
   server->access.unlock();
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void smmServer::addPostCallback(std::string name, callback_t callback) {
+  postCallbackMap[name] = callback;
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+callback_t smmServer::retrievePostCallback(std::string name) {
+  callback_t cb;
+  try {
+    cb = postCallbackMap.at(name);
+  }
+  catch(std::out_of_range err) {
+    std::cerr << "error: could not find callback with key '" << name <<"'" << std::endl;
+    return NULL;
+  }
+  return cb;
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void smmServer::removePostCallback(std::string name) {
+  postCallbackMap.erase(name);
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void smmServer::addGetCallback(std::string name, callback_t callback) {
+  getCallbackMap[name] = callback;
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void smmServer::removeGetCallback(std::string name) {
+  getCallbackMap.erase(name);
 }
   
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
