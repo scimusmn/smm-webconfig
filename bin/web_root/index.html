@@ -7,15 +7,19 @@
   </head>
   <body>
     <script type="text/javascript">
-      function getPuppy() {
-          $.get('/puppy',function(data, status) {
-              $('#puppy_jpeg').attr('src',`data:image/jpeg;base64,${data}`);
-          });
+      function alpha() {
+        $.post('/post',{ callback: 'alpha' });
+      }
+      function beta() {
+        $.get('/get/beta', '', function(data) {
+          alert(data);
+        });
       }
     </script>
     <h1>Server is operational</h1>
     <p>If you can see this, the mongoose server is working correctly</p>
     <img id="puppy_jpeg" src="">
-    <button type="button" onclick="getPuppy()">Puppy!</button>
+    <button type="button" onclick="alpha()">alpha</button>
+    <button type="button" onclick="beta()">beta</button>
   </body>
 </html>
