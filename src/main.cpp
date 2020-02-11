@@ -2,11 +2,16 @@
 
 #include "smmServer.hpp"
 
-void alpha(struct mg_connection* conn,
-           struct http_message* mess,
+void alpha(httpMessage message,
            void* data) {
-  std::cout << "alpha" << std::endl;
-  mg_send_response_line(conn, 200, NULL);
+  std::cout << "callback id: " << message.getHttpVariable("callback") << std::endl;
+  message.replyHttpOk();
+}
+
+void beta(httpMessage message,
+          void* data) {
+  std::cout << "beta" << std::endl;
+  message.replyHttpContent("text/plain", "beta");
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,6 +22,7 @@ int main(int argc, char** argv) {
 
   smmServer server(httpPort, rootPath, NULL);
   server.addPostCallback("alpha", &alpha);
+  server.addGetCallback ("beta",  &beta );
   server.launch();
 
   while(server.isRunning()) {}

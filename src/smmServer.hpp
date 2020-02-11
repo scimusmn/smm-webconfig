@@ -3,26 +3,93 @@
  * with the underlying Mongoose HTTP server a bit cleaner.
  */
 
-#ifndef MG_SERVER_HPP
-#define MG_SERVER_HPP
+#ifndef SMM_SERVER_HPP
+#define SMM_SERVER_HPP
 
 #include <unordered_map>
 #include <iostream>
 #include <vector>
 #include <thread>
 #include <atomic>
-#include <mutex>
 
 #include "mg/mongoose.h"
 
-/*! @typedef
- * @brief Helper typedef to make working with callback function pointers easier.
- */
-typedef void (*callback_t)(struct mg_connection*, struct http_message*, void*);
+class httpMessage;
+
+/*! @brief Helper typedef to make working with callback function pointers easier. */
+//typedef void (*callback_t)(struct mg_connection*, struct http_message*, void*);
+typedef void (*callback_t)(httpMessage, void*);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/*! @class
+/*! @brief Helper class that wraps underlying Mongoose server structures.
+ *
+ * This class is intended to make writing callbacks a little friendlier. However, the
+ * underlying Mongoose structs are public if you'd prefer to use those instead.
+ */
+class httpMessage {
+public:
+  /*! @brief Pointer to the Mongoose mg_connection struct.
+   *
+   * This is included for advanced users who want to be able to more precisely control their
+   * callback behavior. Most users should not need to access or modify it.
+   */
+  struct mg_connection* connection;
+
+  /*! @brief Pointer to the Mongoose http_message struct.
+   *
+   * This is included for advanced users who want to be able to more precisely control their
+   * callback behavior. Most users should not need to access or modify it.
+   */  
+  struct http_message* message;
+
+  /*! @brief The Mongoose server's HTTP settings.
+   *
+   * This is included for advanced users who want to be able to more precisely control their
+   * callback behavior. Most users should not need to access or modify it.
+   */  
+  struct mg_serve_http_opts httpOptions;
+  
+  /*! @brief Construct an httpMessage object.
+   *
+   * @param connection The Mongoose server connection that produced the request.
+   * @param message The Mongoose server HTTP message.
+   * @param httpOptions The Mongoose server's HTTP settings.
+   */
+  httpMessage(struct mg_connection* connection,
+              struct http_message* message,
+              struct mg_serve_http_opts httpOptions);
+
+  /*! @brief Get an HTTP variable from the message.
+   *
+   * @param variableName String containing the name of the variable to extract.
+   *
+   * @returns A string containing the value of the requested variable if it exists,
+   * or an empty string if it doesn't.
+   */
+  std::string getHttpVariable(std::string variableName);
+
+  /*! @brief Respond with a simple <tt>200 OK</tt> message. */
+  void replyHttpOk();
+
+  /*! @brief Send an HTTP error response.
+   *
+   * @param code HTTP error code
+   * @param reason Optional string containing the reason for the response.
+   */
+  void replyHttpError(int code, std::string reason="");
+
+  /*! @brief Send some content via HTTP.
+   *
+   * @param mimeType The MIME type of the content being sent.
+   * @param content A string containing the content to send.
+   */
+  void replyHttpContent(std::string mimeType, std::string content);
+};
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/*! @class smmServer
  * @brief The main server class.
  */
 class smmServer {
@@ -43,6 +110,12 @@ private:
 public:
   /*! @brief The port to serve HTTP content over. */
   char* httpPort;
+
+  /*! @brief The internal Mongoose server's HTTP settings.
+   *
+   * This is public only because of a need for static functions to be able to access
+   * it via pointers, and so should not be modified by the user.
+   */
   struct mg_serve_http_opts httpServerOptions;
 
   /*! @brief A pointer to user data that is passed to callback functions. 
@@ -56,10 +129,9 @@ public:
 
   /*! @brief smmServer constructor.
    *
-   * @var port The port to serve HTTP content over.
-   * @var path The path to the root directory of the web server.
-   * @var callbackMap A map of POST callbacks.
-   * @var userData A pointer to user-constructed data. This is passed to all callbacks.
+   * @param port The port to serve HTTP content over.
+   * @param path The path to the root directory of the web server.
+   * @param userData A pointer to user-constructed data. This is passed to all callbacks.
    */
   smmServer(std::string port,
             std::string path,
@@ -77,16 +149,12 @@ public:
   /*! @brief Stop the server */
   void shutdown();
 
-  void sendCode(struct mg_connection* connection, int code, const char* message);
-
   /*! @brief Returns the current state.
    *
    * @returns @c True if the server is running; @c False otherwise.
    */
   bool isRunning();
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
   /*! @brief Add a callback to a POST request.
    *
    * Adds a callback which can be invoked by sending a POST
@@ -111,12 +179,10 @@ public:
    */
   void removePostCallback(std::string name);
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
   /*! @brief Add a callback to a GET request.
    *
    * Adds a callback which can be invoked by sending a GET
-   * request to @c /get/[name].
+   * request to <tt>/get/[name]</tt>.
    *
    * @param name Final URI string to invoke the callback.
    * @param callback Function pointer to the callback itself.
