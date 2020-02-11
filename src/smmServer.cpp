@@ -264,7 +264,7 @@ void httpMessage::replyHttpContent(std::string mimeType, std::string content) {
   mg_printf(connection,
             "Date: %s\r\n"
             "Content-Type: %s\r\n"
-            "Content-Length: %ul\r\n"
+            "Content-Length: %d\r\n"
             "Connection: close\r\n"
             "\r\n%s",
             getCurrentDateTime().c_str(),
