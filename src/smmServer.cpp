@@ -132,8 +132,9 @@ void smmServer::handleEvent(struct mg_connection* connection,
       // this is a GET callback request
       else if ( strstr(message->uri.p, "/get/") == message->uri.p ) {
         char callbackKey[256];
-        strncpy(callbackKey, message->uri.p + 5, message->uri.len - 5);
-        std::cout << callbackKey << std::endl;
+        int keyLen = message->uri.len - 5;
+        strncpy(callbackKey, message->uri.p + 5, keyLen);
+        callbackKey[keyLen] = 0; // correctly zero-terminate the string
         callback_t callback = server->retrieveGetCallback(callbackKey);
         if (callback != NULL) {
           callback(httpMessage(connection, message, server->httpServerOptions), server->userData);
@@ -150,8 +151,8 @@ void smmServer::handleEvent(struct mg_connection* connection,
     }
   case MG_EV_SEND:
     {
-      int* bytes = (int*) eventData;
-      std::cout << "sent " << *bytes << " bytes\n";
+      // do nothing
+      break;
     }
   default:
     {
@@ -164,53 +165,67 @@ void smmServer::handleEvent(struct mg_connection* connection,
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void smmServer::addPostCallback(std::string name, callback_t callback) {
+  postCallbackMutex.lock();
   postCallbackMap[name] = callback;
+  postCallbackMutex.unlock();
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 callback_t smmServer::retrievePostCallback(std::string name) {
   callback_t cb;
+  postCallbackMutex.lock();
   try {
     cb = postCallbackMap.at(name);
   }
   catch(std::out_of_range err) {
     std::cerr << "error: could not find POST callback with key '" << name <<"'" << std::endl;
+    postCallbackMutex.unlock();
     return NULL;
   }
+  postCallbackMutex.unlock();
   return cb;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void smmServer::removePostCallback(std::string name) {
+  postCallbackMutex.lock();
   postCallbackMap.erase(name);
+  postCallbackMutex.unlock();
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void smmServer::addGetCallback(std::string name, callback_t callback) {
+  getCallbackMutex.lock();
   getCallbackMap[name] = callback;
+  getCallbackMutex.unlock();
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 callback_t smmServer::retrieveGetCallback(std::string name) {
   callback_t cb;
+  getCallbackMutex.lock();
   try {
     cb = getCallbackMap.at(name);
   }
   catch(std::out_of_range err) {
     std::cerr << "error: could not find GET callback with key '" << name <<"'" << std::endl;
+    getCallbackMutex.unlock();
     return NULL;
   }
+  getCallbackMutex.unlock();
   return cb;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void smmServer::removeGetCallback(std::string name) {
+  getCallbackMutex.lock();
   getCallbackMap.erase(name);
+  getCallbackMutex.unlock();
 }
   
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
