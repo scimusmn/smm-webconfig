@@ -17,8 +17,8 @@ void beta(httpMessage message,
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int main(int argc, char** argv) {
-  std::string httpPort = "8000";
-  std::string rootPath = "./web_root";
+  const char* httpPort = "8000";
+  const char* rootPath = "./web_root";
 
   smmServer server(httpPort, rootPath, NULL);
   server.addPostCallback("alpha", &alpha);

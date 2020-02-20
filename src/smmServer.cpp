@@ -26,8 +26,8 @@ static std::string getCurrentDateTime() {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-smmServer::smmServer(std::string port,
-                     std::string path,
+smmServer::smmServer(const char* port,
+                     const char* path,
                      void* userData) :
   running(false),
   postCallbackMap(),
@@ -36,10 +36,10 @@ smmServer::smmServer(std::string port,
   httpServerThread{} {
   // set up http port
   httpPort = (char*) malloc(256*sizeof(char));
-  strcpy(httpPort, port.c_str());
+  strcpy(httpPort, port);
   
   // set server options
-  httpServerOptions.document_root = path.c_str();
+  httpServerOptions.document_root = path;
   httpServerOptions.index_files = NULL;              
   httpServerOptions.per_directory_auth_file = NULL;  
   httpServerOptions.auth_domain = NULL;              
